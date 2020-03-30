@@ -1,0 +1,67 @@
+{
+  "variables": {
+    "ssh_fullname": "paloalto",
+    "ssh_username": "paloalto",
+    "ssh_password": "panhandler",
+    "hostname": "panhandler",
+    "locale": "en_US",
+    "preseed": "preseed.cfg",
+    "boot_command_prefix": "<esc><esc><enter><wait>"
+  },
+  "builders": [
+    {
+      "type": "vmware-iso",
+      "boot_command": [
+        "{{ user `boot_command_prefix` }}",
+        "/install/vmlinuz noapic ",
+        "initrd=/install/initrd.gz ",
+        "file=/floppy/{{ user `preseed` }} ",
+        "debian-installer={{ user `locale` }} auto locale={{ user `locale` }} kbd-chooser/method=us ",
+        "hostname={{ user `hostname` }} ",
+        "grub-installer/bootdev=/dev/sda<wait> ",
+        "fb=false debconf/frontend=noninteractive ",
+        "keyboard-configuration/modelcode=SKIP keyboard-configuration/layout=USA ",
+        "keyboard-configuration/variant=USA console-setup/ask_detect=false ",
+        "passwd/user-fullname={{ user `ssh_fullname` }} ",
+        "passwd/user-password={{ user `ssh_password` }} ",
+        "passwd/user-password-again={{ user `ssh_password` }} ",
+        "passwd/username={{ user `ssh_username` }} ",
+        "-- <enter>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": 20000,
+      "guest_os_type": "ubuntu-64",
+      "headless": false,
+      "http_directory": "http",
+      "floppy_files": [
+        "http/{{ user `preseed` }}"
+      ],
+      "iso_urls": [
+        "{{ pwd }}/iso/ubuntu-18.04.4-server-amd64.iso",
+        "http://cdimage.ubuntu.com/ubuntu/releases/18.04/release/ubuntu-18.04.4-server-amd64.iso"
+      ],
+      "iso_checksum_type": "sha256",
+      "iso_checksum": "e2ecdace33c939527cbc9e8d23576381c493b071107207d2040af72595f8990b",
+      "output_directory": "output_images",
+      "shutdown_command": "echo '{{ user `ssh_password` }}' | sudo -S shutdown -P now",
+      "ssh_password": "{{ user `ssh_password` }}",
+      "ssh_port": 22,
+      "ssh_username": "{{ user `ssh_username` }}",
+      "ssh_wait_timeout": "10000s",
+      "vm_name": "panhandler-{{isotime \"20060102\"}}",
+      "vmx_data": {
+        "cpuid.coresPerSocket": "1",
+        "memsize": "8192",
+        "numvcpus": "4",
+        "vhv.enable": "TRUE"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "ansible-local",
+      "playbook_file": "install-panhandler.yaml",
+      "playbook_dir": "ansible"
+    }
+  ]
+}

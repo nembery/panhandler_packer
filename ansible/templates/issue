@@ -1,0 +1,12 @@
+=================================================================================
+=                       Welcome to Panhandler
+=
+=                     To continue, browse to \4:8080
+=
+=
+=          To update Panhandler to the latest version run this command:
+=                   curl -s -k -L http://bit.ly/2xui5gM | bash
+=
+=
+=                   local login is: paloalto / panhandler
+=================================================================================

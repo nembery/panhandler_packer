@@ -1,0 +1,17 @@
+# /etc/systemd/system/panhandler.service
+
+[Unit]
+Description=Panhandler
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/paloaltonetworks/docker
+ExecStart=/usr/bin/docker start panhandler
+ExecStop=/usr/bin/docker stop panhandler
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
